@@ -9,10 +9,11 @@ class VoiceRecognizer:
         self.p = pyaudio.PyAudio()
         self.stream = None
         self.model = Model("models/vosk-model-cn-0.22")
-        # 设置解码参数，通过 JSON 字符串传递
+        self.recognizer = KaldiRecognizer(self.model, 16000)
+        self.recognizer.SetWords(True)
+        # 调整参数以提高识别准确性
         config = json.dumps({"beam": 15, "max-active": 10000})
         self.recognizer = KaldiRecognizer(self.model, 16000, config)
-        self.recognizer.SetWords(True)
 
         print("可用音频设备：")
         for i in range(self.p.get_device_count()):
@@ -54,7 +55,7 @@ class VoiceRecognizer:
                 print(f"读取到音频数据，长度: {len(data)} 字节，样本数: {total_samples}")
                 print(f"音量: {volume}")
 
-                if volume < 30:  # 降低阈值到 30
+                if volume < 50:
                     silence_counter += 1
                     if silence_counter > 20:
                         print("检测到长时间沉默，停止监听")

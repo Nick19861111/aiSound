@@ -8,7 +8,7 @@ class Speaker:
         try:
             self.engine = pyttsx3.init()
             self.engine.setProperty('voice', 'com.apple.voice.compact.zh-CN.Tingting')
-            self.engine.setProperty('rate', 180)  # 语速调整为 180
+            self.engine.setProperty('rate', 180)  # 调整语速为 180
             self.is_speaking = False
             self.should_stop = False
             voices = self.engine.getProperty('voices')
@@ -39,22 +39,17 @@ class Speaker:
                     print("播报被打断")
                     break
                 if sentence.strip():
-                    print(f"播报句子: {sentence}")
                     self.engine.say(sentence)
                     self.engine.runAndWait()
                     if voice_recognizer:
-                        print("尝试监听语音（播报中）...")
-                        text = listen_while_speaking(voice_recognizer, timeout=1.0)  # 超时时间增加到 1.0 秒
+                        text = listen_while_speaking(voice_recognizer, timeout=0.5)
                         if text:
-                            print(f"播报中识别到语音: {text}")
                             stop_keywords = ["停止", "退出", "停职", "停", "停止播放", "暂停", "停下", "别说了", "闭嘴"]
                             if any(keyword in text for keyword in stop_keywords):
                                 print("检测到停止指令，打断播报")
                                 self.should_stop = True
                                 break
                             return text
-                        else:
-                            print("播报中未识别到语音，继续播报")
                     time.sleep(0.1)
         except Exception as e:
             print(f"播报错误: {str(e)}")
